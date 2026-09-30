@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} Specs | Alpha Store{% endblock %}
+
+{% block content %}
+<style>
+    .detail-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; margin-top: 1.5rem; }
+    @media (min-width: 768px) { .detail-layout { grid-template-columns: 1fr 1fr; } }
+    
+    .visual-preview { width: 100%; min-height: 380px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 7rem; border: 1px solid #edf2f7; }
+    
+    .info-panel { display: flex; flex-direction: column; justify-content: center; }
+    .tag-badge { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 0.75rem; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 6px; text-transform: uppercase; width: fit-content; margin-bottom: 1rem; letter-spacing: 0.05em; }
+    .product-heading { font-size: 2.5rem; font-weight: 800; color: #0f172a; line-height: 1.2; margin-bottom: 1rem; }
+    .product-long-desc { color: #475569; font-size: 1.05rem; line-height: 1.7; margin-bottom: 2rem; }
+    
+    .spec-table { width: 100%; border-collapse: collapse; margin-bottom: 2.5rem; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+    .spec-row { border-bottom: 1px solid #f1f5f9; }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-label { padding: 0.75rem 1rem; font-weight: 600; color: #64748b; font-size: 0.9rem; width: 35%; background: #f8fafc; }
+    .spec-value { padding: 0.75rem 1rem; color: #0f172a; font-size: 0.9rem; font-weight: 500; }
+    
+    .purchase-section { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 2rem; }
+    .huge-price { font-size: 2.75rem; font-weight: 900; color: #0f172a; }
+    .btn-buy { background-color: #4f46e5; color: #ffffff !important; text-decoration: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; transition: background 0.2s; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15); }
+    .btn-buy:hover { background-color: #4338ca; }
+</style>
+
+<div class="detail-layout">
+    <!-- Visual Image Box Placeholder -->
+    <div class="visual-preview">
+        {% if product.id == 1 %}🖱️{% elif product.id == 2 %}⌨️{% else %}🖥️{% endif %}
+    </div>
+    
+    <!-- Text Specs Detail Panel -->
+    <div class="info-panel">
+        <span class="tag-badge">Premium Hardware</span>
+        <h2 class="product-heading">{{ product.name }}</h2>
+        <p class="product-long-desc">{{ product.description }}</p>
+        
+        <!-- Technical Specification Matrix Block -->
+        <table class="spec-table">
+            <tr class="spec-row">
+                <td class="spec-label">Availability</td>
+                <td class="spec-value" style="color: #059669; font-weight: 700;">In Stock (Ready to Ship)</td>
+            </tr>
+            <tr class="spec-row">
+                <td class="spec-label">Warranty</td>
+                <td class="spec-value">2-Year Limited Manufacturer Warranty</td>
+            </tr>
+            <tr class="spec-row">
+                <td class="spec-label">Shipping</td>
+                <td class="spec-value">Standard Complementary Express Delivery</td>
+            </tr>
+        </table>
+        
+        <!-- Call to Action Segment -->
+        <div class="purchase-section">
+            <span class="huge-price">${{ product.price }}</span>
+            <a href="/cart/add/{{ product.id }}/" class="btn-buy">Add to Basket</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

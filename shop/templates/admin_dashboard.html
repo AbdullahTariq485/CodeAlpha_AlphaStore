@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Operational Console | Staff Entry Node{% endblock %}
+
+{% block content %}
+<style>
+    .admin-hero { background: #111111; color: #ffffff; padding: 2.5rem; margin-bottom: 2.5rem; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    .metric-card { background: white; border: 1px solid #e5e5e5; padding: 1.5rem; }
+    .metric-num { font-size: 2rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; color: #000000; margin-top: 0.5rem; }
+    .management-panel { background: white; border: 1px solid #e5e5e5; padding: 2rem; }
+</style>
+
+<div class="admin-hero">
+    <span style="color: #818cf8; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Internal System Node</span>
+    <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.75rem; font-weight: 800; margin-top: 0.25rem;">Staff Management Console</h2>
+    <p style="color: #9ca3af; font-size: 0.9rem; margin-top: 0.25rem;">Secure administrative view layer restricted to active corporate inventory managers.</p>
+</div>
+
+<!-- Executive Metric Indicators -->
+<div class="metric-grid">
+    <div class="metric-card">
+        <span style="font-size: 0.8rem; color: #666666; font-weight: 600; text-transform: uppercase;">Gross Marketplace Income</span>
+        <div class="metric-num">$14,249.50</div>
+    </div>
+    <div class="metric-card">
+        <span style="font-size: 0.8rem; color: #666666; font-weight: 600; text-transform: uppercase;">Total Orders Executed</span>
+        <div class="metric-num">142</div>
+    </div>
+    <div class="metric-card">
+        <span style="font-size: 0.8rem; color: #666666; font-weight: 600; text-transform: uppercase;">Active Stock Entities</span>
+        <div class="metric-num">3 Products</div>
+    </div>
+</div>
+
+<!-- Active Master Order Queue Component -->
+<div class="management-panel">
+    <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">System Order Dispatches</h3>
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 2px solid #111111; color: #666666; font-size: 0.8rem; text-transform: uppercase;">
+                <th style="padding-bottom: 0.75rem;">Account User</th>
+                <th style="padding-bottom: 0.75rem;">Dispatched Value</th>
+                <th style="padding-bottom: 0.75rem; text-align: right;">System Execution Status</th>
+            </tr>
+        </thead>
+        <tbody style="font-size: 0.9rem;">
+            <tr>
+                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; font-weight: 600;">john_dev42</td>
+                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5;">$279.99</td>
+                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; text-align: right; color: #059669; font-weight: 700;">PROCESSED</td>
+            </tr>
+            <tr>
+                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; font-weight: 600;">alpha_tester</td>
+                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5;">$49.99</td>
+                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; text-align: right; color: #d97706; font-weight: 700;">AWAITING SHIPMENT</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

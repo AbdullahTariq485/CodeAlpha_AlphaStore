@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alpha Store | Next-Gen Hardware Engine{% endblock %}</title>
+    
+    <!-- 🚀 Premium Font Injection Engine -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background-color: #fafafa; 
+            color: #111111; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* 🚀 High-End Navigation Bar Styles */
+        header { 
+            background-color: #ffffff; 
+            border-bottom: 1px solid #e5e5e5; 
+            padding: 1.25rem 2rem; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            font-size: 1.35rem; 
+            font-weight: 800; 
+            text-decoration: none; 
+            color: #000000; 
+            letter-spacing: -0.04em; 
+        }
+        .nav-links { display: flex; align-items: center; gap: 1.75rem; }
+        .nav-links a { text-decoration: none; font-size: 0.9rem; font-weight: 500; color: #666666; transition: color 0.15s ease; }
+        .nav-links a:hover { color: #000000; }
+        
+        .btn-basket { background-color: #111111; color: #ffffff !important; padding: 0.6rem 1.15rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: opacity 0.15s ease; text-decoration: none; }
+        .btn-basket:hover { opacity: 0.9; }
+
+        /* 📦 Core Content Grid Area Setup */
+        main { flex-grow: 1; max-width: 1200px; margin: 0 auto; padding: 3.5rem 2rem; width: 100%; }
+
+        /* 🛒 Premium Clickable Catalog Cards Grid System Layout */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2.5rem; width: 100%; }
+        .product-card { 
+            background: #ffffff; 
+            border: 1px solid #e5e5e5; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            transition: border-color 0.25s ease, transform 0.25s ease; 
+            padding: 1.25rem;
+            border-radius: 0px; 
+        }
+        .product-card:hover { border-color: #000000; transform: translateY(-2px); }
+        .card-media { width: 100%; height: 240px; background-color: #f5f5f5; margin-bottom: 1.25rem; }
+        .card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 700; color: #000000; margin-bottom: 0.35rem; letter-spacing: -0.02em; }
+        .card-desc { color: #666666; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .card-price { font-size: 1.35rem; font-weight: 700; color: #000000; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .btn-add { display: block; width: 100%; text-align: center; background-color: #ffffff; color: #111111 !important; border: 1px solid #111111; text-decoration: none; padding: 0.65rem; font-weight: 600; font-size: 0.9rem; transition: background 0.15s ease, color 0.15s ease; }
+        .btn-add:hover { background-color: #111111; color: #ffffff !important; }
+
+        /* 👣 Footer Layout */
+        footer { background-color: #ffffff; color: #888888; text-align: center; padding: 2.5rem; font-size: 0.8rem; border-top: 1px solid #e5e5e5; margin-top: auto; letter-spacing: 0.02em; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="/" class="nav-logo">ALPHA STORE</a>
+            <div class="nav-links">
+                <!-- 🚀 Case 1: Staff Access Panel Check -->
+                {% if user.is_staff %}
+                    <a href="/alpha-staff/" style="color: #4f46e5; font-weight: 700;">⚙️ Staff Dashboard</a>
+                    <a href="/logout/">Log Out</a>
+                    
+                
+                {% elif user.is_authenticated %}
+                    <a href="/profile/" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; color: #000000; text-decoration: none; border: 1px solid #e2e8f0; transition: border-color 0.2s;">
+                        <span style="font-size: 1.1rem;">🧑‍💻</span> 
+                        <span>{{ user.username }}</span>
+                    </a>
+                    <a href="/logout/">Log Out</a>
+                    <a href="/cart/" class="btn-basket">Basket</a>
+                    
+                <!-- 🚀 Case 3: Guest Visitor Defaults Links -->
+                {% else %}
+                    <a href="/login/">Sign In</a>
+                    <a href="/register/">Register</a>
+                    <a href="/cart/" class="btn-basket">Basket</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Layout Interface Content Viewport Injection Area -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- 🌟 Clean Notification Anchor Box: Safely passes server messages directly to cart.js data parsing rows -->
+    <div id="toast-matrix-container" 
+         data-messages="{% if messages %}{% for m in messages %}{{ m }}|{% if m.tags == 'error' %}error{% else %}success{% endif %};{% endfor %}{% endif %}"
+         style="position: fixed; top: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 10000; pointer-events: none;">
+    </div>
+
+    <!-- 🚀 Independent Static JavaScript Engine Core Link Connection -->
+    <script src="{% static 'shop/cart.js' %}"></script>
+    
+    <footer>
+        <p>&copy; 2026 Alpha Store. Built for Modern Workspaces. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

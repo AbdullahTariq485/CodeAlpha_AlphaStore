@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account | Alpha Store{% endblock %}
+
+{% block content %}
+<style>
+    .auth-card { 
+        max-width: 460px; 
+        margin: 4rem auto; 
+        background: white; 
+        border: 1px solid #e5e5e5; 
+        padding: 2.5rem; 
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01), 0 2px 4px -1px rgba(0,0,0,0.005);
+    }
+    .auth-title { 
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 1.75rem; 
+        font-weight: 800; 
+        margin-bottom: 0.35rem; 
+        text-align: center; 
+        letter-spacing: -0.03em;
+        color: #000000;
+    }
+    .auth-subtitle { 
+        color: #666666; 
+        font-size: 0.9rem; 
+        text-align: center; 
+        margin-bottom: 2.5rem; 
+    }
+    .form-group { 
+        margin-bottom: 1.5rem; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 0.5rem; 
+    }
+    .form-group label { 
+        font-size: 0.85rem; 
+        font-weight: 600; 
+        color: #111111; 
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    /* 🚀 High-end inputs override styling for standard Django fields */
+    .form-group input { 
+        width: 100%; 
+        padding: 0.75rem 1rem; 
+        border: 1px solid #e5e5e5; 
+        font-size: 0.95rem; 
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.15s ease;
+    }
+    .form-group input:focus { 
+        outline: none;
+        border-color: #000000; 
+    }
+    .auth-btn { 
+        display: block; 
+        width: 100%; 
+        background: #111111; 
+        color: #ffffff !important; 
+        border: none; 
+        padding: 0.85rem; 
+        font-weight: 600; 
+        font-size: 0.95rem; 
+        cursor: pointer; 
+        transition: opacity 0.15s ease; 
+        margin-top: 2rem; 
+        text-align: center; 
+        text-decoration: none; 
+    }
+    .auth-btn:hover { 
+        opacity: 0.9; 
+    }
+    .auth-switch { 
+        text-align: center; 
+        margin-top: 1.75rem; 
+        font-size: 0.875rem; 
+        color: #666666; 
+    }
+    .auth-switch a { 
+        color: #000000; 
+        font-weight: 600; 
+        text-decoration: underline; 
+    }
+    /* Hides or tames the massive default Django password helptext chunks to preserve layout look */
+    .helptext { 
+        font-size: 0.75rem; 
+        color: #888888; 
+        line-height: 1.4;
+        display: block; 
+        margin-top: 0.25rem; 
+    }
+    .helptext ul { padding-left: 1rem; margin-top: 0.25rem; }
+</style>
+
+<div class="auth-card">
+    <!-- 🚀 Renders dynamic title overrides cleanly with structured safe fallbacks -->
+    <h2 class="auth-title">{{ auth_title|default:"Create Account" }}</h2>
+    <p class="auth-subtitle">{{ auth_subtitle|default:"Join us to access curated workplace essentials" }}</p>
+    
+    <form method="POST">
+        <!-- Secure Django form verification tag token -->
+        {% csrf_token %}
+        
+        <!-- Iterates and loops through the backend model fields cleanly -->
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text|safe }}</span>
+                {% endif %}
+                {% for error in field.errors %}
+                    <span style="color: #f43f5e; font-size: 0.75rem; font-weight: 700; margin-top: 0.25rem;">⚠️ {{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="auth-btn">Register Securely</button>
+    </form>
+    
+    <p class="auth-switch">Already have an account? <a href="/login/">Sign in here</a></p>
+</div>
+{% endblock %}
