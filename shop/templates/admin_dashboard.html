@@ -1,60 +1,195 @@
 {% extends 'base.html' %}
 
-{% block title %}Operational Console | Staff Entry Node{% endblock %}
+{% block title %}Operational Console | Enterprise Command Center{% endblock %}
 
 {% block content %}
 <style>
-    .admin-hero { background: #111111; color: #ffffff; padding: 2.5rem; margin-bottom: 2.5rem; }
-    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-    .metric-card { background: white; border: 1px solid #e5e5e5; padding: 1.5rem; }
-    .metric-num { font-size: 2rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; color: #000000; margin-top: 0.5rem; }
-    .management-panel { background: white; border: 1px solid #e5e5e5; padding: 2rem; }
+    .admin-hero { background: var(--bc-black); color: var(--bc-pure-white); padding: 3.5rem 2rem; margin-bottom: 3.5rem; border: 1px solid #1a1a1a; }
+    .admin-hero-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+    
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; margin-bottom: 4rem; }
+    .metric-card { background: var(--bc-pure-white); border: 1px solid var(--bc-border); padding: 1.5rem; }
+    .metric-num { font-size: 2.25rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--bc-black); margin-top: 0.5rem; letter-spacing: -0.02em; }
+    
+    .panel-headline { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--bc-black); margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+    .console-section { background: var(--bc-pure-white); border: 1px solid var(--bc-border); padding: 2.5rem 2rem; margin-bottom: 3.5rem; }
+    
+    .admin-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.925rem; }
+    .admin-table th { padding-bottom: 1rem; border-bottom: 2px solid var(--bc-black); color: var(--bc-text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
+    .admin-table td { padding: 1.25rem 0; border-bottom: 1px solid var(--bc-border); vertical-align: middle; transition: all 0.3s ease; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    
+    .btn-toggle-action { display: inline-block; background: transparent; border: 1px solid var(--bc-black); color: var(--bc-black); padding: 0.4rem 0.8rem; font-size: 0.8rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.15s ease; border-radius: 0; }
+    .btn-toggle-action:hover { background: var(--bc-black); color: var(--bc-pure-white); }
+    
+    .select-status { background: var(--bc-pure-white); border: 1px solid var(--bc-border); padding: 0.4rem; font-family: var(--bc-font); font-size: 0.825rem; font-weight: 600; color: var(--bc-black); border-radius: 0; }
+    .select-status:focus { outline: none; border-color: var(--bc-black); }
+
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+    .input-box { display: flex; flex-direction: column; gap: 0.5rem; }
+    .input-box label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--bc-text-dark); letter-spacing: 0.05em; }
+    .input-box input, .input-box textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--bc-border); font-family: var(--bc-font); font-size: 0.9rem; border-radius: 0; }
+    .input-box input:focus, .input-box textarea:focus { outline: none; border-color: var(--bc-black); }
+    .btn-submit-product { background: var(--bc-black); color: var(--bc-pure-white); border: none; padding: 0.85rem 2rem; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: opacity 0.15s ease; }
+    .btn-submit-product:hover { opacity: 0.85; }
 </style>
 
 <div class="admin-hero">
-    <span style="color: #818cf8; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Internal System Node</span>
-    <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.75rem; font-weight: 800; margin-top: 0.25rem;">Staff Management Console</h2>
-    <p style="color: #9ca3af; font-size: 0.9rem; margin-top: 0.25rem;">Secure administrative view layer restricted to active corporate inventory managers.</p>
+    <span style="color: #818cf8; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 0.25rem;">Internal Workspace Node</span>
+    <h2 class="admin-hero-title">Staff Operations Portal</h2>
+    <p style="color: #888888; font-size: 0.95rem; margin-top: 0.35rem;">Secure administrative environment mapped to live data arrays.</p>
 </div>
 
-<!-- Executive Metric Indicators -->
+<!-- Financial Summary Indicators Dashboard Widgets -->
 <div class="metric-grid">
     <div class="metric-card">
-        <span style="font-size: 0.8rem; color: #666666; font-weight: 600; text-transform: uppercase;">Gross Marketplace Income</span>
-        <div class="metric-num">$14,249.50</div>
+        <span style="font-size: 0.75rem; color: var(--bc-text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Gross Revenue Capture</span>
+        <div class="metric-num">${{ gross_income }}</div>
     </div>
     <div class="metric-card">
-        <span style="font-size: 0.8rem; color: #666666; font-weight: 600; text-transform: uppercase;">Total Orders Executed</span>
-        <div class="metric-num">142</div>
+        <span style="font-size: 0.75rem; color: var(--bc-text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Active Pipelines Queue</span>
+        <div class="metric-num" id="active-queue-count">{{ total_orders_count }}</div>
     </div>
     <div class="metric-card">
-        <span style="font-size: 0.8rem; color: #666666; font-weight: 600; text-transform: uppercase;">Active Stock Entities</span>
-        <div class="metric-num">3 Products</div>
+        <span style="font-size: 0.75rem; color: var(--bc-text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Active Managed Catalog</span>
+        <div class="metric-num">{{ products.count }} Items</div>
     </div>
 </div>
 
-<!-- Active Master Order Queue Component -->
-<div class="management-panel">
-    <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">System Order Dispatches</h3>
-    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+<!-- 🚀 NEW SECTION: LIST NEW PRODUCT CREATION PANEL -->
+<div class="console-section">
+    <h3 class="panel-headline">List New Product Item</h3>
+    <form method="POST" action="/alpha-staff/">
+        {% csrf_token %}
+        <input type="hidden" name="create_product_form" value="1">
+        
+        <div class="form-row">
+            <div class="input-box">
+                <label for="id_prod_name">Hardware Component Name</label>
+                <input type="text" id="id_prod_name" name="prod_name" required placeholder="e.g., Mechanical Ergonomic Keyboard">
+            </div>
+            <div class="input-box">
+                <label for="id_prod_price">Price Valuation ($)</label>
+                <input type="number" id="id_prod_price" name="prod_price" step="0.01" min="0.01" required placeholder="e.g., 129.99">
+            </div>
+        </div>
+        
+        <div class="input-box" style="margin-bottom: 1.5rem;">
+            <label for="id_prod_desc">Technical Specifications Description</label>
+            <textarea id="id_prod_desc" name="prod_desc" rows="3" required placeholder="Enter key product features and workspace specs details..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-submit-product">Publish To Catalog</button>
+    </form>
+</div>
+
+<!-- 📦 SECTION 1: ASYNC STOCK ALLOCATION CONTROL MATRIX -->
+<div class="console-section">
+    <h3 class="panel-headline">Live Catalog Stock Allocation</h3>
+    <table class="admin-table">
         <thead>
-            <tr style="border-bottom: 2px solid #111111; color: #666666; font-size: 0.8rem; text-transform: uppercase;">
-                <th style="padding-bottom: 0.75rem;">Account User</th>
-                <th style="padding-bottom: 0.75rem;">Dispatched Value</th>
-                <th style="padding-bottom: 0.75rem; text-align: right;">System Execution Status</th>
+            <tr>
+                <th>Hardware Component</th>
+                <th>Price Valuation</th>
+                <th>Database ID</th>
+                <th>Fulfillment Visibility</th>
+                <th style="text-align: right;">Operational Action</th>
             </tr>
         </thead>
-        <tbody style="font-size: 0.9rem;">
-            <tr>
-                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; font-weight: 600;">john_dev42</td>
-                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5;">$279.99</td>
-                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; text-align: right; color: #059669; font-weight: 700;">PROCESSED</td>
+                <tbody>
+            {% for product in products %}
+            <!-- Standard Read-Only Data Row -->
+            <tr id="product-base-row-{{ product.id }}">
+                <td style="font-weight: 700; color: var(--bc-black);" id="display-name-{{ product.id }}">{{ product.name }}</td>
+                <td style="color: var(--bc-text-muted); font-weight: 500;" id="display-price-{{ product.id }}">${{ product.price }}</td>
+                <td style="font-family: monospace; font-size: 0.85rem; color: #888888;">#PROD-00{{ product.id }}</td>
+                <td>
+                    <span id="stock-badge-{{ product.id }}">
+                        {% if product.in_stock %}
+                            <span style="color: #059669; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.02em;">● In Stock</span>
+                        {% else %}
+                            <span style="color: #e11d48; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.02em;">○ Out of Stock</span>
+                        {% endif %}
+                    </span>
+                </td>
+                <td style="text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <button type="button" class="btn-toggle-action" onclick="window.toggleEditRow('{{ product.id }}')">✏️ Edit Specs</button>
+                    <button type="button" class="btn-toggle-action" onclick="window.asyncToggleStock('{{ product.id }}')">Toggle Stock</button>
+                </td>
             </tr>
-            <tr>
-                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; font-weight: 600;">alpha_tester</td>
-                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5;">$49.99</td>
-                <td style="padding: 1rem 0; border-bottom: 1px solid #e5e5e5; text-align: right; color: #d97706; font-weight: 700;">AWAITING SHIPMENT</td>
+            
+            <!-- Expandable Inline Property Modifier Panel Row -->
+            <tr id="edit-form-row-{{ product.id }}" style="display: none; background: #fafafa;">
+                <td colspan="5" style="padding: 1.5rem; border-bottom: 1px solid var(--bc-black);">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="input-box">
+                                <label>Modify Title</label>
+                                <input type="text" id="edit-name-in-{{ product.id }}" value="{{ product.name }}">
+                            </div>
+                            <div class="input-box">
+                                <label>Re-Adjust Valuation ($)</label>
+                                <input type="number" id="edit-price-in-{{ product.id }}" step="0.01" value="{{ product.price }}">
+                            </div>
+                        </div>
+                        <div class="input-box">
+                            <label>Update Description Sheet</label>
+                            <textarea id="edit-desc-in-{{ product.id }}" rows="2">{{ product.description }}</textarea>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                            <button type="button" class="btn-toggle-action" style="background: #111111; color: white;" onclick="window.asyncEditProduct('{{ product.id }}')">Save Changes</button>
+                            <button type="button" class="btn-toggle-action" onclick="window.toggleEditRow('{{ product.id }}')">Cancel</button>
+                        </div>
+                    </div>
+                </td>
             </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+<!-- 🚚 SECTION 2: ASYNC CUSTOMERS FULFILLMENT QUEUE LOG MATRIX -->
+<div class="console-section">
+    <h3 class="panel-headline">Active Marketplace Shipments Log</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Fulfillment ID</th>
+                <th>Customer Profile Account</th>
+                <th>Invoiced Total</th>
+                <th>Pipeline Shipment Status</th>
+                <th style="text-align: right;">Update Dispatch Node</th>
+            </tr>
+        </thead>
+        <tbody id="admin-orders-tbody">
+            {% for order in live_orders %}
+            <tr id="order-row-{{ order.id }}">
+                <td style="font-weight: 700; font-family: monospace; color: var(--bc-black);">#ALPHA-00{{ order.id }}</td>
+                <td style="font-weight: 600; color: #475569;">👤 {{ order.user.username }}</td>
+                <td style="font-weight: 700; color: #111111;">${{ order.price_display }}</td>
+                <td>
+                    <span id="status-badge-{{ order.id }}" style="display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border-radius: 4px; background: #e0f2fe; color: #0369a1;">
+                        {{ order.status }}
+                    </span>
+                </td>
+                <td style="text-align: right;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <select id="select-status-{{ order.id }}" class="select-status" aria-label="Select order tracking update state">
+                            <option value="In Transit" {% if order.status == "In Transit" %}selected{% endif %}>In Transit</option>
+                            <option value="Dispatched" {% if order.status == "Dispatched" %}selected{% endif %}>Dispatched</option>
+                            <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+                            <option value="Delivered" {% if order.status == "Delivered" %}selected{% endif %}>Delivered (Archive)</option>
+                        </select>
+                        <button type="button" class="btn-toggle-action" style="padding: 0.35rem 0.6rem;" onclick="window.asyncUpdateOrder('{{ order.id }}')">Update</button>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr id="no-orders-msg">
+                <td colspan="5" style="text-align: center; color: var(--bc-text-muted); padding: 3rem 0;">No active consumer orders logged in database pipelines yet.</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>

@@ -12,7 +12,7 @@ from .models import Product, CartItem, Order, OrderItem
 # =========================================================================
 
 def product_list(request):
-    """Renders the storefront index grid listing hardware catalog products."""
+    """Renders the storefront index grid listing products directly from database records."""
     products = Product.objects.all()
     return render(request, 'store.html', {'products': products})
 
@@ -28,10 +28,7 @@ def product_detail(request, product_id):
 # =========================================================================
 
 def login_user(request):
-    """
-    Validates log in request credentials and pushes error text strings
-    to client-side JavaScript toast notifications upon validation failures.
-    """
+    """Validates login credentials and triggers client-side toast notifications on failures."""
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -50,7 +47,26 @@ def login_user(request):
     return render(request, 'login.html', {'form': form})
 
 
+# 🚀 ADD THIS IMPORT AT THE TOP OF shop/views.py:
+from .forms import CustomRegistrationForm
+
+# 🚀 OVERWRITE YOUR register_user VIEW FUNCTION EXACTLY LIKE THIS:
 def register_user(request):
+    """Registers standard customer profiles with a mandatory email field inside the database."""
+    if request.method == 'POST':
+        # Use our custom extended form layer instead of the default one
+        form = CustomRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Account provisioned successfully! Welcome to Alpha Store.")
+            return redirect('/')
+        else:
+            messages.error(request, "Registration rejected. Please verify form attributes.")
+    else:
+        form = CustomRegistrationForm()
+    return render(request, 'register.html', {'form': form})
+
     """Registers standard customer profiles safely into the database."""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -175,7 +191,10 @@ def add_to_cart(request, product_id):
 
 
 def increase_cart(request, product_id):
-    """Increments the basket item quantity and returns clean JSON data."""
+    """Increments table rows count and responds with flash-free async JSON values."""
+    if product_id == 0:
+        return JsonResponse(get_cart_totals(request))
+        
     if request.user.is_authenticated:
         cart_item = get_object_or_404(CartItem, user=request.user, product_id=product_id)
         cart_item.quantity += 1
@@ -183,18 +202,16 @@ def increase_cart(request, product_id):
     else:
         cart = request.session.get('cart', {})
         pid_str = str(product_id)
-        cart[pid_str] = cart.get(pid_str, 0) + 1
-        request.session['cart'] = cart
-        request.session.modified = True
+        if pid_str in cart:
+            cart[pid_str] += 1
+            request.session['cart'] = cart
+            request.session.modified = True
             
-    # 🚀 If it's a background fetch request, return JSON data directly
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        return JsonResponse(get_cart_totals(request))
-    return redirect('/cart/')
+    return JsonResponse(get_cart_totals(request))
 
 
 def decrease_cart(request, product_id):
-    """Decrements the basket item quantity and returns clean JSON data."""
+    """Decrements table rows count and responds with flash-free async JSON values."""
     removed = False
     if request.user.is_authenticated:
         cart_item = get_object_or_404(CartItem, user=request.user, product_id=product_id)
@@ -216,28 +233,12 @@ def decrease_cart(request, product_id):
             request.session['cart'] = cart
             request.session.modified = True
             
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        data = get_cart_totals(request)
-        data['removed'] = removed
-        return JsonResponse(data)
-    return redirect('/cart/')
+    data = get_cart_totals(request)
+    data['removed'] = removed
+    return JsonResponse(data)
 
 
 def remove_from_cart(request, product_id):
-    """Completely purges an item row from the shopping basket."""
-    if request.user.is_authenticated:
-        CartItem.objects.filter(user=request.user, product_id=product_id).delete()
-    else:
-        cart = request.session.get('cart', {})
-        pid_str = str(product_id)
-        if pid_str in cart:
-            del cart[pid_str]
-            request.session['cart'] = cart
-            request.session.modified = True
-            
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        return JsonResponse(get_cart_totals(request))
-    return redirect('/cart/')
     """Completely purges item elements rows from active display panels."""
     if request.user.is_authenticated:
         CartItem.objects.filter(user=request.user, product_id=product_id).delete()
@@ -258,11 +259,13 @@ def remove_from_cart(request, product_id):
 
 @login_required(login_url='login')
 def customer_profile(request):
-    """Retrieves transactional historical records for profiles safely."""
+    """Retrieves transactional history status straight from database rows."""
     raw_orders = Order.objects.filter(user=request.user).order_by('-id')
     orders_data = []
     
     for order in raw_orders:
+        current_status = getattr(order, 'status', 'In Transit')
+        
         if hasattr(order, 'total_amount'):
             order_price = order.total_amount
         elif hasattr(order, 'total'):
@@ -274,6 +277,7 @@ def customer_profile(request):
             
         orders_data.append({
             'id': order.id,
+            'status': current_status,
             'price_display': f"{float(order_price):.2f}"
         })
         
@@ -281,19 +285,157 @@ def customer_profile(request):
 
 
 @login_required(login_url='login')
+# Locate your secret_admin_dashboard inside shop/views.py and replace it:
+
+@login_required(login_url='login')
 def secret_admin_dashboard(request):
-    """Operational Firewall Gatekeeper: Only passes merchant supervisors."""
+    """
+    Live Operational Staff Control Dashboard: Manages real-time fulfillment pipelines,
+    revenue counts, and processes new product creation inputs directly into database columns.
+    """
     if not request.user.is_staff:
         return redirect('/')
-    return render(request, 'admin_dashboard.html')
+        
+    # 🚀 REAL-WORLD FEATURE: Handle new product creation form entries
+    if request.method == 'POST' and 'create_product_form' in request.POST:
+        name = request.POST.get('prod_name')
+        desc = request.POST.get('prod_desc')
+        price = request.POST.get('prod_price')
+        
+        if name and desc and price:
+            try:
+                Product.objects.create(
+                    name=name,
+                    description=desc,
+                    price=float(price),
+                    in_stock=True
+                )
+                messages.success(request, f"Successfully listed new hardware element: {name}")
+            except ValueError:
+                messages.error(request, "Product creation rejected. Invalid numeric price format.")
+            return redirect('/alpha-staff/')
+
+    products = Product.objects.all()
+    raw_orders = Order.objects.all().order_by('-id')
+    
+    gross_income = 0.0
+    active_orders_data = []
+    
+    for order in raw_orders:
+        if hasattr(order, 'total_amount'):
+            price_val = order.total_amount
+        elif hasattr(order, 'total'):
+            price_val = order.total
+        elif hasattr(order, 'total_price'):
+            price_val = order.total_price
+        else:
+            price_val = 0.00
+            
+        gross_income += float(price_val)
+        current_status = getattr(order, 'status', 'In Transit')
+        
+        if current_status == "Delivered":
+            continue
+            
+        active_orders_data.append({
+            'id': order.id,
+            'user': order.user,
+            'status': current_status,
+            'price_display': f"{float(price_val):.2f}"
+        })
+        
+    context = {
+        'products': products,
+        'live_orders': active_orders_data,
+        'total_orders_count': len(active_orders_data),
+        'gross_income': f"{gross_income:.2f}"
+    }
+    return render(request, 'admin_dashboard.html', context)
+
+    """Live Operational Staff Control Dashboard: Pulls genuine database structures."""
+    if not request.user.is_staff:
+        return redirect('/')
+        
+    products = Product.objects.all()
+    raw_orders = Order.objects.all().order_by('-id')
+    
+    gross_income = 0.0
+    active_orders_data = []
+    
+    for order in raw_orders:
+        if hasattr(order, 'total_amount'):
+            price_val = order.total_amount
+        elif hasattr(order, 'total'):
+            price_val = order.total
+        elif hasattr(order, 'total_price'):
+            price_val = order.total_price
+        else:
+            price_val = 0.00
+            
+        gross_income += float(price_val)
+        current_status = getattr(order, 'status', 'In Transit')
+        
+        if current_status == "Delivered":
+            continue
+            
+        active_orders_data.append({
+            'id': order.id,
+            'user': order.user,
+            'status': current_status,
+            'price_display': f"{float(price_val):.2f}"
+        })
+        
+    context = {
+        'products': products,
+        'live_orders': active_orders_data,
+        'total_orders_count': len(active_orders_data),
+        'gross_income': f"{gross_income:.2f}"
+    }
+    return render(request, 'admin_dashboard.html', context)
+
+
+@login_required(login_url='login')
+def staff_toggle_stock(request, product_id):
+    """Toggles product catalog stock availability states globally inside database fields."""
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+    product = get_object_or_404(Product, id=product_id)
+    product.in_stock = not product.in_stock
+    product.save()
+    
+    return JsonResponse({
+        'success': True,
+        'product_id': product.id,
+        'in_stock': product.in_stock
+    })
+
+
+@login_required(login_url='login')
+def staff_update_order(request, order_id):
+    """Saves shipment log status modifications straight into the database order row."""
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id)
+        next_status = request.POST.get('status_update', 'In Transit')
+        
+        order.status = next_status
+        order.save()
+        
+        return JsonResponse({
+            'success': True,
+            'order_id': order.id,
+            'new_status': next_status
+        })
+        
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
 @login_required(login_url='login')
 def checkout(request):
-    """
-    Compiles user baskets into final checkout objects, pre-resolves 
-    pricing variables to guarantee template rendering stability.
-    """
+    """Compiles item elements selections into final checkout objects."""
     cart_items = CartItem.objects.filter(user=request.user)
     if not cart_items.exists():
         return redirect('/cart/')
@@ -303,25 +445,40 @@ def checkout(request):
         total_price += float(item.product.price) * int(item.quantity)
 
     order = Order(user=request.user)
-    
-    # Safely match whatever pricing field your Order schema uses
-    if hasattr(order, 'total_price'):
-        order.total_price = total_price
-    elif hasattr(order, 'total_amount'):
-        order.total_amount = total_price
-    elif hasattr(order, 'total'):
-        order.total = total_price
-    else:
-        try:
-            order.total_amount = total_price
-        except AttributeError:
-            pass
-
+    order.status = 'In Transit'
+    order.total_price = total_price
     order.save()
+    
     cart_items.delete()
     
-    # 🚀 Pre-format total string to completely shield template compilation layers from crashes
     return render(request, 'order_success.html', {
         'order': order,
         'captured_charge': f"{total_price:.2f}"
     })
+@login_required(login_url='login')
+def staff_edit_product(request, product_id):
+    """Allows administrators to dynamically modify listed product specs, titles, and prices."""
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        
+        # Grab updated fields from the AJAX payload
+        product.name = request.POST.get('edit_name', product.name)
+        product.description = request.POST.get('edit_desc', product.description)
+        
+        try:
+            product.price = float(request.POST.get('edit_price', product.price))
+            product.save()
+            return JsonResponse({
+                'success': True,
+                'product_id': product.id,
+                'name': product.name,
+                'price': f"{product.price:.2f}",
+                'description': product.description
+            })
+        except ValueError:
+            return JsonResponse({'error': 'Invalid numeric price format'}, status=400)
+            
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

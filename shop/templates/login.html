@@ -26,6 +26,7 @@
         font-size: 0.9rem; 
         text-align: center; 
         margin-bottom: 2.5rem; 
+        line-height: 1.5;
     }
     .form-group { 
         margin-bottom: 1.5rem; 
@@ -84,13 +85,13 @@
 </style>
 
 <div class="auth-card">
-    <h2 class="auth-title">Welcome Back</h2>
-    <p class="auth-subtitle">Sign in to manage your premium hardware hardware items</p>
+    <!-- 🚀 FIXED HEADING: Professional enterprise authority phrasing parameters -->
+    <h2 class="auth-title">Sign In to Account</h2>
+    <p class="auth-subtitle">Authorized personnel and customer identity secure validation gate.</p>
     
     <form method="POST">
         {% csrf_token %}
         
-        <!-- Render standard Django authentication field vectors loop -->
         {% for field in form %}
             <div class="form-group">
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -98,7 +99,6 @@
             </div>
         {% endfor %}
         
-        <!-- Local execution validation row for top level password issues -->
         {% if form.non_field_errors %}
             {% for error in form.non_field_errors %}
                 <div style="color: #f43f5e; font-size: 0.85rem; font-weight: 600; margin-top: 1rem; text-align: center;">
