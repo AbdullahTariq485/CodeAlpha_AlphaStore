@@ -1,6 +1,6 @@
 # 🛒 Alpha Store: Real-Time Full-Stack E-Commerce Framework
 
-A premium, highly synchronized e-commerce store built with **Django 5.x** and **Asynchronous Vanilla JavaScript (AJAX/Fetch API)**. This system delivers an enterprise-grade experience featuring independent customer-facing portals alongside a high-density, real-world **Operations Staff Control Console** backed by a persistent relational database schema.
+A premium, highly synchronized e-commerce store built with **Django 6.x** and **Asynchronous Vanilla JavaScript (AJAX/Fetch API)**. This system delivers an enterprise-grade experience featuring independent customer-facing portals alongside a high-density, real-world **Operations Staff Control Console** backed by a persistent relational database schema.
 
 ---
 
