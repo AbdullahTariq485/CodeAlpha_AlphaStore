@@ -1,5 +1,6 @@
 /**
  * 🚀 Alpha Store Core Client-Side Interactivity Engine
+ * Fully Consolidated Asset Layer Housing All Storefront AJAX Operations
  */
 
 // Helper function to read secure CSRF token cookies
@@ -142,6 +143,46 @@ window.asyncToggleStock = function(productId) {
     .catch(err => console.error("Stock level operational update failure:", err));
 };
 
+// Extended Inline Specs Form Data Editor Handler
+window.asyncEditProduct = function(productId) {
+    const url = `/alpha-staff/edit-product/${productId}/`;
+    const name = document.getElementById(`edit-name-in-${productId}`).value;
+    const price = document.getElementById(`edit-price-in-${productId}`).value;
+    const desc = document.getElementById(`edit-desc-in-${productId}`).value;
+    const imageInput = document.getElementById(`edit-image-in-${productId}`);
+    
+    // Create a multi-part form payload to stream binaries safely
+    let formData = new FormData();
+    formData.append('edit_name', name);
+    formData.append('edit_price', price);
+    formData.append('edit_desc', desc);
+    
+    // 🚀 INDEX 0 FIX: Grabs the actual individual file object directly out of your drive
+    if (imageInput && imageInput.files && imageInput.files[0]) {
+        formData.append('edit_image', imageInput.files[0]);
+    }
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Soft page refresh to draw the updated image pointer layout out of the media folder
+            window.location.reload();
+        } else {
+            window.showToast(data.error || "Failed to update item specifications.", "error");
+        }
+    })
+    .catch(err => console.error("Product property edit operation failed:", err));
+};
+
+
 // Shipment Update Controller Bound Globally to Window Scope
 window.asyncUpdateOrder = function(orderId) {
     const url = `/alpha-staff/order/${orderId}/`;
@@ -167,7 +208,7 @@ window.asyncUpdateOrder = function(orderId) {
     .then(data => {
         if (data.success) {
             if (data.new_status === 'Delivered') {
-                const row = document.getElementById(`order-row-${orderId}`);
+                const row = document.getElementById('order-row-' + orderId);
                 if (row) {
                     row.style.opacity = '0';
                     row.style.transform = 'scale(0.95)';
@@ -184,7 +225,7 @@ window.asyncUpdateOrder = function(orderId) {
                 }
                 window.showToast(`Order #ALPHA-00${orderId} finalized & archived to history logs.`);
             } else {
-                const badge = document.getElementById(`status-badge-${orderId}`);
+                const badge = document.getElementById('status-badge-' + orderId);
                 if (badge) badge.innerText = data.new_status;
                 window.showToast(`Tracking status updated to: ${data.new_status}`);
             }
@@ -193,7 +234,13 @@ window.asyncUpdateOrder = function(orderId) {
     .catch(err => console.error("Fulfillment dispatch queue transmission failure:", err));
 };
 
-// Clean DOM initialiser processing dataset variables safely
+// Expandable sub-editor row panel toggler helper
+window.toggleEditRow = function(productId) {
+    const row = document.getElementById('edit-form-row-' + productId);
+    if (row) row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+};
+
+// Clean DOM initializer processing dataset variables safely
 document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById('toast-matrix-container');
     if (!container) return;
@@ -206,57 +253,14 @@ document.addEventListener("DOMContentLoaded", function () {
     messageRows.forEach(row => {
         const parts = row.split('|');
         if (parts.length === 2) {
-            window.showToast(parts, parts);
+            window.showToast(parts[0], parts[1]);
         }
     });
 });
 
-// 🚀 BULLETPROOF REAL-TIME CROSS-BROWSER INTERFACE SYNC LISTENER
-// Every time a user clicks back onto or focuses a customer tab, it reads straight from the upgraded database records instantly
+// Cross-browser live visibility focus reloader
 document.addEventListener("visibilitychange", function() {
     if (!document.hidden) {
         window.location.reload();
     }
 });
-// 🚀 Global handler to submit inline product spec alterations
-window.asyncEditProduct = function(productId) {
-    const url = `/alpha-staff/edit-product/${productId}/`;
-    const name = document.getElementById(`edit-name-in-${productId}`).value;
-    const price = document.getElementById(`edit-price-in-${productId}`).value;
-    const desc = document.getElementById(`edit-desc-in-${productId}`).value;
-    
-    let formData = new FormData();
-    formData.append('edit_name', name);
-    formData.append('edit_price', price);
-    formData.append('edit_desc', desc);
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': getCSRFToken() // Uses your existing CSRF cookie token helper
-        },
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            // Update the baseline read-only text fields on the dashboard
-            document.getElementById(`display-name-${productId}`).innerText = data.name;
-            document.getElementById(`display-price-${productId}`).innerText = `$${data.price}`;
-            
-            // Toggle the visibility mode box back down softly
-            document.getElementById(`edit-form-row-${productId}`).style.display = 'none';
-            showToast("Hardware specifications committed successfully!");
-        } else {
-            showToast(data.error || "Failed to update item.", "error");
-        }
-    })
-    .catch(err => console.error("Product property edit operation failed:", err));
-};
-
-// Simple visual toggle helper method
-window.toggleEditRow = function(productId) {
-    const row = document.getElementById(`edit-form-row-${productId}`);
-    row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
-};

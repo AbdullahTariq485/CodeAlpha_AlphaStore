@@ -10,6 +10,9 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     in_stock = models.BooleanField(default=True)
+    
+    # 🚀 FIXED: Absolute pristine field using upload_to parameter
+    image = models.ImageField(upload_to='products/', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -35,10 +38,7 @@ class CartItem(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    # 🚀 FIX: Swapped max_width out for the correct max_length keyword parameter
     status = models.CharField(max_length=50, default='In Transit')
-    
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):

@@ -56,10 +56,10 @@
     </div>
 </div>
 
-<!-- 🚀 NEW SECTION: LIST NEW PRODUCT CREATION PANEL -->
+<!-- 📦 SECTION: LIST NEW PRODUCT CREATION PANEL WITH FILE UPLOADER -->
 <div class="console-section">
     <h3 class="panel-headline">List New Product Item</h3>
-    <form method="POST" action="/alpha-staff/">
+    <form method="POST" action="/alpha-staff/" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="create_product_form" value="1">
         
@@ -73,6 +73,12 @@
                 <input type="number" id="id_prod_price" name="prod_price" step="0.01" min="0.01" required placeholder="e.g., 129.99">
             </div>
         </div>
+
+        <!-- FILE UPLOADER INTERFACE ELEMENT -->
+        <div class="input-box" style="margin-bottom: 1.5rem;">
+            <label for="id_prod_image">Upload Product Image Asset</label>
+            <input type="file" id="id_prod_image" name="prod_image" accept="image/*" style="border: 1px dashed var(--bc-border); padding: 1rem; background: #fafafa;">
+        </div>
         
         <div class="input-box" style="margin-bottom: 1.5rem;">
             <label for="id_prod_desc">Technical Specifications Description</label>
@@ -83,7 +89,7 @@
     </form>
 </div>
 
-<!-- 📦 SECTION 1: ASYNC STOCK ALLOCATION CONTROL MATRIX -->
+<!-- 📦 SECTION 1: ASYNC STOCK ALLOCATION CONTROL MATRIX WITH INLINE EDITOR -->
 <div class="console-section">
     <h3 class="panel-headline">Live Catalog Stock Allocation</h3>
     <table class="admin-table">
@@ -96,7 +102,7 @@
                 <th style="text-align: right;">Operational Action</th>
             </tr>
         </thead>
-                <tbody>
+        <tbody>
             {% for product in products %}
             <!-- Standard Read-Only Data Row -->
             <tr id="product-base-row-{{ product.id }}">
@@ -120,7 +126,7 @@
             
             <!-- Expandable Inline Property Modifier Panel Row -->
             <tr id="edit-form-row-{{ product.id }}" style="display: none; background: #fafafa;">
-                <td colspan="5" style="padding: 1.5rem; border-bottom: 1px solid var(--bc-black);">
+                <td colspan="5" style="padding: 1.5rem; border-bottom: 1px solid var(--bc-border);">
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                             <div class="input-box">
@@ -132,6 +138,13 @@
                                 <input type="number" id="edit-price-in-{{ product.id }}" step="0.01" value="{{ product.price }}">
                             </div>
                         </div>
+                        
+                        <!-- INLINE IMAGE MODIFIER FILE INPUT FIELD ELEMENT -->
+                        <div class="input-box">
+                            <label>Replace Product Image Asset File</label>
+                            <input type="file" id="edit-image-in-{{ product.id }}" accept="image/*" style="background: white; border: 1px solid var(--bc-border); padding: 0.5rem;">
+                        </div>
+                        
                         <div class="input-box">
                             <label>Update Description Sheet</label>
                             <textarea id="edit-desc-in-{{ product.id }}" rows="2">{{ product.description }}</textarea>
@@ -145,11 +158,9 @@
             </tr>
             {% endfor %}
         </tbody>
-
     </table>
 </div>
 
-<!-- 🚚 SECTION 2: ASYNC CUSTOMERS FULFILLMENT QUEUE LOG MATRIX -->
 <div class="console-section">
     <h3 class="panel-headline">Active Marketplace Shipments Log</h3>
     <table class="admin-table">

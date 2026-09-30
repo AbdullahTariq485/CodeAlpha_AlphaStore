@@ -457,6 +457,72 @@ def checkout(request):
     })
 @login_required(login_url='login')
 def staff_edit_product(request, product_id):
+    """
+    Modifies product catalog records directly inside database columns.
+    Handles title re-writes, price re-valuations, and real-time image updates.
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        
+        # Pull parameters straight from the incoming multi-part data payload
+        product.name = request.POST.get('edit_name', product.name)
+        product.description = request.POST.get('edit_desc', product.description)
+        product.price = float(request.POST.get('edit_price', product.price))
+        
+        # 🚀 DATABASE RECORD UPLOADER: If a file stream is captured, commit it to DB
+        if 'edit_image' in request.FILES:
+            product.image = request.FILES['edit_image']
+            
+        product.save() # 💥 Permanent SQL Write Lock Commit
+        
+        return JsonResponse({
+            'success': True,
+            'product_id': product.id,
+            'name': product.name,
+            'price': f"{product.price:.2f}",
+            'description': product.description
+        })
+        
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+    """Allows administrators to dynamically modify listed product specs, titles, prices, and images."""
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        
+        # Grab updated fields from the AJAX payload
+        product.name = request.POST.get('edit_name', product.name)
+        product.description = request.POST.get('edit_desc', product.description)
+        
+        # 🚀 REAL-WORLD MEDIA HANDLE: Capture new image file stream updates if provided
+        if 'edit_image' in request.FILES:
+            product.image = request.FILES['edit_image']
+        
+        try:
+            product.price = float(request.POST.get('edit_price', product.price))
+            product.save()
+            
+            # Generate valid image URL string fallback if empty
+            image_url = product.image.url if product.image else ""
+            
+            return JsonResponse({
+                'success': True,
+                'product_id': product.id,
+                'name': product.name,
+                'price': f"{product.price:.2f}",
+                'description': product.description,
+                'image_url': image_url  # Send new asset url back to browser
+            })
+        except ValueError:
+            return JsonResponse({'error': 'Invalid numeric price format'}, status=400)
+            
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
     """Allows administrators to dynamically modify listed product specs, titles, and prices."""
     if not request.user.is_staff:
         return JsonResponse({'error': 'Unauthorized'}, status=403)
