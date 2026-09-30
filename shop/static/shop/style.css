@@ -1,0 +1,197 @@
+/* 🎨 BigCommerce Enterprise Design Token Palette */
+@import url('https://googleapis.com');
+
+:root {
+    --bc-black: #0b0b0b;
+    --bc-pure-white: #ffffff;
+    --bc-gray-bg: #fafafa;
+    --bc-text-dark: #111111;
+    --bc-text-muted: #555555;
+    --bc-border: #e5e5e5;
+    --bc-border-hover: #000000;
+    --bc-font: 'Inter', -apple-system, sans-serif;
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body { 
+    font-family: var(--bc-font); 
+    background-color: var(--bc-gray-bg); 
+    color: var(--bc-text-dark); 
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 🚀 High-End Navigation Bar Styles */
+header { 
+    background-color: var(--bc-pure-white); 
+    border-bottom: 1px solid var(--bc-border); 
+    padding: 1.5rem 2rem; 
+    position: sticky; 
+    top: 0; 
+    z-index: 100; 
+}
+
+.nav-container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.nav-logo { 
+    font-size: 1.25rem; 
+    font-weight: 800; 
+    text-decoration: none; 
+    color: var(--bc-black); 
+    letter-spacing: -0.05em; 
+    text-transform: uppercase;
+}
+
+.nav-links { 
+    display: flex; 
+    align-items: center; 
+    gap: 2rem; 
+}
+
+.nav-links a { 
+    text-decoration: none; 
+    font-size: 0.9rem; 
+    font-weight: 500; 
+    color: var(--bc-text-muted); 
+    transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+
+.nav-links a:hover { 
+    color: var(--bc-black); 
+}
+
+/* 🛒 BigCommerce CTA Capsule Button */
+.btn-basket { 
+    background-color: var(--bc-black); 
+    color: var(--bc-pure-white) !important; 
+    padding: 0.65rem 1.25rem; 
+    border-radius: 4px; 
+    font-weight: 600; 
+    font-size: 0.85rem; 
+    letter-spacing: -0.01em;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
+    text-decoration: none; 
+}
+
+.btn-basket:hover { 
+    opacity: 0.85; 
+}
+
+/* 📦 Central Platform Layout Area */
+main { 
+    flex-grow: 1; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 4.5rem 2rem; 
+    width: 100%; 
+}
+
+/* 🛒 Premium Clickable High-Contrast Matrix Grid System Layout */
+.product-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+    gap: 3rem; 
+    width: 100%; 
+}
+
+.product-card { 
+    background: var(--bc-pure-white); 
+    border: 1px solid var(--bc-border); 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    padding: 1.5rem;
+    border-radius: 0px; 
+    transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+}
+
+.product-card:hover { 
+    border-color: var(--bc-border-hover); 
+    transform: translateY(-4px); 
+}
+
+.card-media { 
+    width: 100%; 
+    height: 260px; 
+    background-color: #f7f7f7; 
+    margin-bottom: 1.5rem; 
+    border: 1px solid var(--bc-border);
+}
+
+.card-title { 
+    font-size: 1.35rem; 
+    font-weight: 700; 
+    color: var(--bc-black); 
+    margin-bottom: 0.5rem; 
+    letter-spacing: -0.03em; 
+}
+
+.card-desc { 
+    color: var(--bc-text-muted); 
+    font-size: 0.925rem; 
+    line-height: 1.6; 
+    margin-bottom: 2rem; 
+    flex-grow: 1; 
+}
+
+.price-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 1.25rem; 
+}
+
+.card-price { 
+    font-size: 1.4rem; 
+    font-weight: 700; 
+    color: var(--bc-black); 
+    letter-spacing: -0.02em;
+}
+
+/* 🚀 Outline CTA Action Button */
+.btn-add { 
+    display: block; 
+    width: 100%; 
+    text-align: center; 
+    background-color: var(--bc-pure-white); 
+    color: var(--bc-black) !important; 
+    border: 1px solid var(--bc-black); 
+    text-decoration: none; 
+    padding: 0.75rem; 
+    font-weight: 600; 
+    font-size: 0.9rem; 
+    transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+
+.btn-add:hover { 
+    background-color: var(--bc-black); 
+    color: var(--bc-pure-white) !important; 
+}
+
+/* 👣 Corporate Footer Section */
+footer { 
+    background-color: var(--bc-pure-white); 
+    color: #777777; 
+    text-align: center; 
+    padding: 3rem; 
+    font-size: 0.825rem; 
+    border-top: 1px solid var(--bc-border); 
+    margin-top: auto; 
+    letter-spacing: 0.01em; 
+}
