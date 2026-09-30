@@ -301,6 +301,7 @@ def secret_admin_dashboard(request):
         name = request.POST.get('prod_name')
         desc = request.POST.get('prod_desc')
         price = request.POST.get('prod_price')
+        image = request.FILES.get('prod_image')
         
         if name and desc and price:
             try:
@@ -308,7 +309,8 @@ def secret_admin_dashboard(request):
                     name=name,
                     description=desc,
                     price=float(price),
-                    in_stock=True
+                    in_stock=True,
+                    image=image
                 )
                 messages.success(request, f"Successfully listed new hardware element: {name}")
             except ValueError:
@@ -470,7 +472,10 @@ def staff_edit_product(request, product_id):
         # Pull parameters straight from the incoming multi-part data payload
         product.name = request.POST.get('edit_name', product.name)
         product.description = request.POST.get('edit_desc', product.description)
-        product.price = float(request.POST.get('edit_price', product.price))
+        try:
+            product.price = float(request.POST.get('edit_price', product.price))
+        except (TypeError, ValueError):
+            return JsonResponse({'error': 'Invalid numeric price format'}, status=400)
         
         # 🚀 DATABASE RECORD UPLOADER: If a file stream is captured, commit it to DB
         if 'edit_image' in request.FILES:
@@ -483,68 +488,8 @@ def staff_edit_product(request, product_id):
             'product_id': product.id,
             'name': product.name,
             'price': f"{product.price:.2f}",
-            'description': product.description
+            'description': product.description,
+            'image_url': product.image.url if product.image else ''
         })
         
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-
-    """Allows administrators to dynamically modify listed product specs, titles, prices, and images."""
-    if not request.user.is_staff:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
-        
-    if request.method == 'POST':
-        product = get_object_or_404(Product, id=product_id)
-        
-        # Grab updated fields from the AJAX payload
-        product.name = request.POST.get('edit_name', product.name)
-        product.description = request.POST.get('edit_desc', product.description)
-        
-        # 🚀 REAL-WORLD MEDIA HANDLE: Capture new image file stream updates if provided
-        if 'edit_image' in request.FILES:
-            product.image = request.FILES['edit_image']
-        
-        try:
-            product.price = float(request.POST.get('edit_price', product.price))
-            product.save()
-            
-            # Generate valid image URL string fallback if empty
-            image_url = product.image.url if product.image else ""
-            
-            return JsonResponse({
-                'success': True,
-                'product_id': product.id,
-                'name': product.name,
-                'price': f"{product.price:.2f}",
-                'description': product.description,
-                'image_url': image_url  # Send new asset url back to browser
-            })
-        except ValueError:
-            return JsonResponse({'error': 'Invalid numeric price format'}, status=400)
-            
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-
-    """Allows administrators to dynamically modify listed product specs, titles, and prices."""
-    if not request.user.is_staff:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
-        
-    if request.method == 'POST':
-        product = get_object_or_404(Product, id=product_id)
-        
-        # Grab updated fields from the AJAX payload
-        product.name = request.POST.get('edit_name', product.name)
-        product.description = request.POST.get('edit_desc', product.description)
-        
-        try:
-            product.price = float(request.POST.get('edit_price', product.price))
-            product.save()
-            return JsonResponse({
-                'success': True,
-                'product_id': product.id,
-                'name': product.name,
-                'price': f"{product.price:.2f}",
-                'description': product.description
-            })
-        except ValueError:
-            return JsonResponse({'error': 'Invalid numeric price format'}, status=400)
-            
     return JsonResponse({'error': 'Invalid request method'}, status=400)

@@ -130,7 +130,9 @@
 <div class="detail-wrapper">
     <!-- Left Hand Column: Clean Image Rendering without broken quotes -->
     <div class="detail-media-frame">
-        {% if "mouse" in product.name|lower %}
+        {% if product.has_image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
+        {% elif "mouse" in product.name|lower %}
             <img src="{% static 'shop/images/mouse.jpg' %}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
         {% elif "keyboard" in product.name|lower %}
             <img src="{% static 'shop/images/keyboard.jpg' %}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">

@@ -131,19 +131,34 @@
     <a href="#" class="store-sub-link" onclick="window.showToast('Section tracking filtered components coming soon...')">Audio Equipment</a>
 </div>
 
-<div style="margin-bottom: 3.5rem; border-left: 2px solid var(--bc-black); padding-left: 1.5rem;">
-    <span style="font-size: 0.8rem; font-weight: 700; color: var(--bc-text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Curated Marketplace</span>
-    <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2.25rem; font-weight: 800; color: var(--bc-black); margin-top: 0.25rem; letter-spacing: -0.04em;">Engineered Setup Essentials</h2>
-    <p style="color: var(--bc-text-muted); font-size: 1.05rem; margin-top: 0.25rem;">Refine your execution framework with clean, premium developer hardware arrays.</p>
+<div class="store-hero">
+    <div>
+        <span class="eyebrow">ALPHA / CURATED HARDWARE</span>
+        <h1>Better tools for sharper work.</h1>
+        <p>Thoughtfully selected input devices, displays, and desk essentials for focused teams and ambitious setups.</p>
+    </div>
+    <div class="store-hero-note">
+        <strong>Ready for the next build.</strong>
+        Fast dispatch, honest specs, and equipment chosen to earn its place on your desk.
+    </div>
 </div>
 
 <!-- 📦 2. Product Cards Grid Matrix -->
+<div class="catalog-heading">
+    <div>
+        <h2>Shop the collection</h2>
+        <p>Essential hardware, selected for everyday performance.</p>
+    </div>
+    <p>{{ products.count }} items in the catalog</p>
+</div>
 <div class="product-grid">
     {% for product in products %}
     <div class="product-card" style="position: relative;">
         
         <div class="card-media" style="position: relative; overflow: hidden; background: #ffffff; display: flex; align-items: center; justify-content: center;">
-            {% if "mouse" in product.name|lower %}
+            {% if product.has_image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
+            {% elif "mouse" in product.name|lower %}
                 <img src="{% static 'shop/images/mouse.jpg' %}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
             {% elif "keyboard" in product.name|lower %}
                 <img src="{% static 'shop/images/keyboard.jpg' %}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">

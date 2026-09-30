@@ -14,6 +14,10 @@ class Product(models.Model):
     # 🚀 FIXED: Absolute pristine field using upload_to parameter
     image = models.ImageField(upload_to='products/', null=True, blank=True)
 
+    @property
+    def has_image(self):
+        return bool(self.image and self.image.storage.exists(self.image.name))
+
     def __str__(self):
         return self.name
 
