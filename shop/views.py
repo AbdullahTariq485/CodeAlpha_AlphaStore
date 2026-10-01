@@ -7,10 +7,6 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Product, CartItem, Order, OrderItem
 
-# =========================================================================
-# 🏠 HOME & PRODUCT CATALOG VIEWS
-# =========================================================================
-
 def product_list(request):
     """Renders the storefront index grid listing products directly from database records."""
     products = Product.objects.all()
@@ -23,9 +19,54 @@ def product_detail(request, product_id):
     return render(request, 'product_detail.html', {'product': product})
 
 
-# =========================================================================
-# 🔐 SYSTEM ACCOUNT ACCESS AUTHENTICATION VIEWS
-# =========================================================================
+def store_policy(request, page_key):
+    pages = {
+        'terms': {
+            'eyebrow': 'CUSTOMER AGREEMENT',
+            'title': 'Terms of service',
+            'intro': 'The straightforward rules for shopping with Alpha Store.',
+            'sections': [
+                ('Orders and payment', 'Orders are accepted when payment is authorized and inventory is available. Prices are shown in USD and may change before an order is placed.'),
+                ('Product information', 'We work to keep product descriptions, images, and availability accurate. Small differences in color or finish may occur between a screen and the physical product.'),
+                ('Account responsibility', 'Keep your account credentials private and make sure your delivery details are correct before checkout.'),
+                ('Contact', 'Questions about an order can be sent to support@alphastore.example with your order number.'),
+            ],
+        },
+        'privacy': {
+            'eyebrow': 'YOUR DATA',
+            'title': 'Privacy policy',
+            'intro': 'What we collect, why we use it, and how we keep it limited.',
+            'sections': [
+                ('Information we collect', 'We collect the details you provide when creating an account, placing an order, or contacting support, including your name, email, delivery address, and order history.'),
+                ('How we use information', 'We use account and order information to process purchases, provide support, improve the store, and send updates you have requested.'),
+                ('Sharing and retention', 'We share only the information needed with payment, delivery, and infrastructure providers. We retain records only as long as needed for service, accounting, and legal obligations.'),
+                ('Your choices', 'You can request access, correction, or deletion of your personal information by contacting support@alphastore.example.'),
+            ],
+        },
+        'shipping': {
+            'eyebrow': 'DELIVERY & RETURNS',
+            'title': 'Shipping and returns',
+            'intro': 'Clear expectations from checkout to your doorstep.',
+            'sections': [
+                ('Dispatch', 'In-stock orders are prepared within 1-2 business days. Delivery estimates are shown at checkout and may vary by destination.'),
+                ('Tracking', 'When your order leaves our warehouse, we send tracking details to the email on your account.'),
+                ('Returns', 'Unused items may be returned within 30 days of delivery in their original packaging. Contact support before sending anything back so we can provide the correct instructions.'),
+                ('Damaged or incorrect items', 'Contact us within 7 days with your order number and photos. We will arrange a replacement or refund when the issue is confirmed.'),
+            ],
+        },
+        'contact': {
+            'eyebrow': 'ALPHA SUPPORT',
+            'title': 'We are here to help.',
+            'intro': 'Talk to a real support channel about products, orders, or returns.',
+            'sections': [
+                ('Email support', 'support@alphastore.example'),
+                ('Response time', 'Our support team replies within one business day, Monday through Friday.'),
+                ('Order help', 'Include your order number and the email used at checkout so we can resolve your request quickly.'),
+            ],
+        },
+    }
+    return render(request, 'legal_page.html', {'page': pages[page_key]})
+
 
 def login_user(request):
     """Validates login credentials and triggers client-side toast notifications on failures."""
@@ -47,14 +88,11 @@ def login_user(request):
     return render(request, 'login.html', {'form': form})
 
 
-# 🚀 ADD THIS IMPORT AT THE TOP OF shop/views.py:
 from .forms import CustomRegistrationForm
 
-# 🚀 OVERWRITE YOUR register_user VIEW FUNCTION EXACTLY LIKE THIS:
 def register_user(request):
     """Registers standard customer profiles with a mandatory email field inside the database."""
     if request.method == 'POST':
-        # Use our custom extended form layer instead of the default one
         form = CustomRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
@@ -87,10 +125,6 @@ def logout_user(request):
     logout(request)
     return redirect('/')
 
-
-# =========================================================================
-# 🛒 SINGLE-PAGE AJAX BASKET STATE MECHANICAL CONTROLS
-# =========================================================================
 
 def get_cart_totals(request):
     """Calculates active shopping items subtotals to sync async calculations."""
@@ -253,10 +287,6 @@ def remove_from_cart(request, product_id):
     return JsonResponse(get_cart_totals(request))
 
 
-# =========================================================================
-# 📦 OPERATIONS ADMIN CONTROL PANELS & PROFILE HISTORY LOGS
-# =========================================================================
-
 @login_required(login_url='login')
 def customer_profile(request):
     """Retrieves transactional history status straight from database rows."""
@@ -285,9 +315,6 @@ def customer_profile(request):
 
 
 @login_required(login_url='login')
-# Locate your secret_admin_dashboard inside shop/views.py and replace it:
-
-@login_required(login_url='login')
 def secret_admin_dashboard(request):
     """
     Live Operational Staff Control Dashboard: Manages real-time fulfillment pipelines,
@@ -296,7 +323,6 @@ def secret_admin_dashboard(request):
     if not request.user.is_staff:
         return redirect('/')
         
-    # 🚀 REAL-WORLD FEATURE: Handle new product creation form entries
     if request.method == 'POST' and 'create_product_form' in request.POST:
         name = request.POST.get('prod_name')
         desc = request.POST.get('prod_desc')
@@ -322,6 +348,7 @@ def secret_admin_dashboard(request):
     
     gross_income = 0.0
     active_orders_data = []
+    delivered_orders_data = []
     
     for order in raw_orders:
         if hasattr(order, 'total_amount'):
@@ -335,61 +362,22 @@ def secret_admin_dashboard(request):
             
         gross_income += float(price_val)
         current_status = getattr(order, 'status', 'In Transit')
-        
-        if current_status == "Delivered":
-            continue
-            
-        active_orders_data.append({
+        order_data = {
             'id': order.id,
             'user': order.user,
             'status': current_status,
             'price_display': f"{float(price_val):.2f}"
-        })
-        
-    context = {
-        'products': products,
-        'live_orders': active_orders_data,
-        'total_orders_count': len(active_orders_data),
-        'gross_income': f"{gross_income:.2f}"
-    }
-    return render(request, 'admin_dashboard.html', context)
+        }
 
-    """Live Operational Staff Control Dashboard: Pulls genuine database structures."""
-    if not request.user.is_staff:
-        return redirect('/')
-        
-    products = Product.objects.all()
-    raw_orders = Order.objects.all().order_by('-id')
-    
-    gross_income = 0.0
-    active_orders_data = []
-    
-    for order in raw_orders:
-        if hasattr(order, 'total_amount'):
-            price_val = order.total_amount
-        elif hasattr(order, 'total'):
-            price_val = order.total
-        elif hasattr(order, 'total_price'):
-            price_val = order.total_price
+        if current_status == 'Delivered':
+            delivered_orders_data.append(order_data)
         else:
-            price_val = 0.00
-            
-        gross_income += float(price_val)
-        current_status = getattr(order, 'status', 'In Transit')
-        
-        if current_status == "Delivered":
-            continue
-            
-        active_orders_data.append({
-            'id': order.id,
-            'user': order.user,
-            'status': current_status,
-            'price_display': f"{float(price_val):.2f}"
-        })
+            active_orders_data.append(order_data)
         
     context = {
         'products': products,
         'live_orders': active_orders_data,
+        'delivered_orders': delivered_orders_data,
         'total_orders_count': len(active_orders_data),
         'gross_income': f"{gross_income:.2f}"
     }
@@ -469,7 +457,6 @@ def staff_edit_product(request, product_id):
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
         
-        # Pull parameters straight from the incoming multi-part data payload
         product.name = request.POST.get('edit_name', product.name)
         product.description = request.POST.get('edit_desc', product.description)
         try:
@@ -477,11 +464,10 @@ def staff_edit_product(request, product_id):
         except (TypeError, ValueError):
             return JsonResponse({'error': 'Invalid numeric price format'}, status=400)
         
-        # 🚀 DATABASE RECORD UPLOADER: If a file stream is captured, commit it to DB
         if 'edit_image' in request.FILES:
             product.image = request.FILES['edit_image']
             
-        product.save() # 💥 Permanent SQL Write Lock Commit
+        product.save()
         
         return JsonResponse({
             'success': True,

@@ -116,19 +116,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-# =========================================================================
-# 🖼️ BULLETPROOF WINDOWS STATIC STORAGE LAYER CONFIGURATION
-# =========================================================================
 import os
 
 STATIC_URL = 'static/'
 
-# Force Django to actively inspect your absolute hard drive directory maps
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'shop', 'static'),
 ]
 
-# Safeguard fallback directory mapping
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 

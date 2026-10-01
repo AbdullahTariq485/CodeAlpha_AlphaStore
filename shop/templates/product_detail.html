@@ -5,7 +5,6 @@
 
 {% block content %}
 <style>
-    /* 🚀 Localized Design Specs for BigCommerce Aesthetic Matrix */
     .detail-wrapper {
         display: grid;
         grid-template-columns: 1fr;
@@ -127,43 +126,32 @@
     }
 </style>
 
+<div class="detail-breadcrumb"><a href="{% url 'product_list' %}">Store</a><span>/</span><span>{{ product.name }}</span></div>
+
 <div class="detail-wrapper">
-    <!-- Left Hand Column: Clean Image Rendering without broken quotes -->
     <div class="detail-media-frame">
         {% if product.has_image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
+            <img class="detail-product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
         {% elif "mouse" in product.name|lower %}
-            <img src="{% static 'shop/images/mouse.jpg' %}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
+            <img class="detail-product-image" src="{% static 'shop/images/mouse.jpg' %}" alt="{{ product.name }}">
         {% elif "keyboard" in product.name|lower %}
-            <img src="{% static 'shop/images/keyboard.jpg' %}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
+            <img class="detail-product-image" src="{% static 'shop/images/keyboard.jpg' %}" alt="{{ product.name }}">
         {% else %}
-            <img src="{% static 'shop/images/monitor.jpg' %}" alt="{{ product.name }}" style="width:100%; height:100%; object-fit: cover;">
+            <img class="detail-product-image" src="{% static 'shop/images/monitor.jpg' %}" alt="{{ product.name }}">
         {% endif %}
     </div>
     
-    <!-- Right Hand Column: Premium Product Specifications Data Sheet -->
     <div class="detail-info-panel">
         <span class="corporate-badge">Enterprise Hardware</span>
         <h2 class="detail-title">{{ product.name }}</h2>
         <p class="detail-desc">{{ product.description }}</p>
         
-        <!-- Standardized Corporate Specification Matrix Table -->
-        <table class="spec-matrix-table">
-            <tr class="spec-matrix-row">
-                <td class="spec-matrix-label">Availability</td>
-                <td class="spec-matrix-value" style="color: #059669; font-weight: 700;">In Stock (Immediate Dispatch)</td>
-            </tr>
-            <tr class="spec-matrix-row">
-                <td class="spec-matrix-label">Warranty Unit</td>
-                <td class="spec-matrix-value">2-Year Limited Tier-1 Enterprise Cover</td>
-            </tr>
-            <tr class="spec-matrix-row">
-                <td class="spec-matrix-label">Logistics</td>
-                <td class="spec-matrix-value">Complementary Global Express Delivery</td>
-            </tr>
-        </table>
+        <div class="spec-matrix-table">
+            <div class="spec-matrix-row"><span class="spec-matrix-label">Availability</span><span class="spec-matrix-value spec-available">In Stock (Immediate Dispatch)</span></div>
+            <div class="spec-matrix-row"><span class="spec-matrix-label">Warranty</span><span class="spec-matrix-value">2-Year Limited Tier-1 Enterprise Cover</span></div>
+            <div class="spec-matrix-row"><span class="spec-matrix-label">Logistics</span><span class="spec-matrix-value">Complimentary Global Express Delivery</span></div>
+        </div>
         
-        <!-- Bottom Call-To-Action Price Segment Block -->
         <div class="detail-purchase-row">
             <span class="detail-price-tag">${{ product.price }}</span>
             <a href="/cart/add/{{ product.id }}/" class="btn-detail-add">Add to Basket</a>

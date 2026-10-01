@@ -1,9 +1,3 @@
-/**
- * 🚀 Alpha Store Core Client-Side Interactivity Engine
- * Fully Consolidated Asset Layer Housing All Storefront AJAX Operations
- */
-
-// Helper function to read secure CSRF token cookies
 function getCSRFToken() {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -19,52 +13,48 @@ function getCSRFToken() {
     return cookieValue;
 }
 
-// Global function to spawn premium toast notifications dynamically
 window.showToast = function(message, type = 'success') {
     const container = document.getElementById('toast-matrix-container');
     if (!container) return;
 
-    const toast = document.createElement('div');
-    toast.style.pointerEvents = 'auto';
-    toast.style.minWidth = '300px';
-    toast.style.background = '#ffffff';
-    toast.style.color = '#111111';
-    toast.style.borderLeft = type === 'error' ? '4px solid #f43f5e' : '4px solid #059669';
-    toast.style.padding = '1rem 1.25rem';
-    toast.style.boxShadow = '0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.03)';
-    toast.style.display = 'flex';
-    toast.style.justifyContent = 'space-between';
-    toast.style.alignItems = 'center';
-    toast.style.fontFamily = "'Inter', sans-serif";
-    toast.style.fontSize = '0.9rem';
-    toast.style.fontWeight = '600';
-    toast.style.transform = 'translateX(120%)';
-    toast.style.opacity = '0';
-    toast.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease';
+    const existingToast = [...container.children].find(toast => toast.dataset.message === message);
+    if (existingToast) return;
+    while (container.children.length >= 3) container.firstElementChild.remove();
 
-    toast.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span>${type === 'error' ? '⚠️' : '✨'}</span>
-            <span>${message}</span>
-        </div>
-        <button onclick="this.parentElement.remove()" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #888888; padding-left: 1rem;">&times;</button>
-    `;
+    const toast = document.createElement('div');
+    toast.className = 'store-toast';
+    toast.dataset.message = message;
+    toast.style.setProperty('--toast-accent', type === 'error' ? '#e11d48' : '#4f46e5');
+    toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+
+    const icon = document.createElement('span');
+    icon.className = 'store-toast-icon';
+    icon.textContent = type === 'error' ? '!' : '✓';
+    const copy = document.createElement('span');
+    copy.textContent = message;
+    const close = document.createElement('button');
+    close.className = 'store-toast-close';
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Dismiss notification');
+    close.textContent = '×';
+    toast.append(icon, copy, close);
 
     container.appendChild(toast);
+    close.addEventListener('click', () => dismissToast(toast));
 
     setTimeout(() => {
-        toast.style.transform = 'translateX(0)';
-        toast.style.opacity = '1';
+        toast.classList.add('is-visible');
     }, 10);
 
-    setTimeout(() => {
-        toast.style.transform = 'translateX(120%)';
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 400);
-    }, 3500);
+    setTimeout(() => dismissToast(toast), 4200);
 };
 
-// Global function to process dynamic basket increments/decrements/removals
+function dismissToast(toast) {
+    if (!toast || toast.classList.contains('is-leaving')) return;
+    toast.classList.add('is-leaving');
+    setTimeout(() => toast.remove(), 260);
+}
+
 window.modifyCart = function(action, productId) {
     const url = `/cart/${action}/${productId}/`;
     
@@ -80,7 +70,10 @@ window.modifyCart = function(action, productId) {
 
         if (action === 'remove' || data.removed === true) {
             const row = document.getElementById(`row-${productId}`);
-            if (row) row.remove();
+            if (row) {
+                row.classList.add('is-removing');
+                setTimeout(() => row.remove(), 300);
+            }
             
             window.showToast("Item completely removed from basket", "error");
             
@@ -101,8 +94,18 @@ window.modifyCart = function(action, productId) {
             if (itemData) {
                 const qtyEl = document.getElementById(`qty-${productId}`);
                 const subEl = document.getElementById(`subtotal-${productId}`);
-                if (qtyEl) qtyEl.innerText = itemData.quantity;
-                if (subEl) subEl.innerText = itemData.subtotal;
+                if (qtyEl) {
+                    qtyEl.innerText = itemData.quantity;
+                    qtyEl.classList.remove('value-updated');
+                    void qtyEl.offsetWidth;
+                    qtyEl.classList.add('value-updated');
+                }
+                if (subEl) {
+                    subEl.innerText = itemData.subtotal;
+                    subEl.classList.remove('value-updated');
+                    void subEl.offsetWidth;
+                    subEl.classList.add('value-updated');
+                }
                 
                 window.showToast("Basket quantity updated smoothly!");
             }
@@ -114,7 +117,6 @@ window.modifyCart = function(action, productId) {
     });
 };
 
-// Stock Toggle Controller Bound Globally to Window Scope
 window.asyncToggleStock = function(productId) {
     const url = `/alpha-staff/stock/${productId}/`;
     
@@ -143,7 +145,6 @@ window.asyncToggleStock = function(productId) {
     .catch(err => console.error("Stock level operational update failure:", err));
 };
 
-// Extended Inline Specs Form Data Editor Handler
 window.asyncEditProduct = function(productId) {
     const url = `/alpha-staff/edit-product/${productId}/`;
     const name = document.getElementById(`edit-name-in-${productId}`).value;
@@ -151,13 +152,11 @@ window.asyncEditProduct = function(productId) {
     const desc = document.getElementById(`edit-desc-in-${productId}`).value;
     const imageInput = document.getElementById(`edit-image-in-${productId}`);
     
-    // Create a multi-part form payload to stream binaries safely
     let formData = new FormData();
     formData.append('edit_name', name);
     formData.append('edit_price', price);
     formData.append('edit_desc', desc);
     
-    // 🚀 INDEX 0 FIX: Grabs the actual individual file object directly out of your drive
     if (imageInput && imageInput.files && imageInput.files[0]) {
         formData.append('edit_image', imageInput.files[0]);
     }
@@ -173,7 +172,6 @@ window.asyncEditProduct = function(productId) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            // Soft page refresh to draw the updated image pointer layout out of the media folder
             window.location.reload();
         } else {
             window.showToast(data.error || "Failed to update item specifications.", "error");
@@ -183,7 +181,6 @@ window.asyncEditProduct = function(productId) {
 };
 
 
-// Shipment Update Controller Bound Globally to Window Scope
 window.asyncUpdateOrder = function(orderId) {
     const url = `/alpha-staff/order/${orderId}/`;
     const selector = document.getElementById(`select-status-${orderId}`);
@@ -234,14 +231,49 @@ window.asyncUpdateOrder = function(orderId) {
     .catch(err => console.error("Fulfillment dispatch queue transmission failure:", err));
 };
 
-// Expandable sub-editor row panel toggler helper
 window.toggleEditRow = function(productId) {
     const row = document.getElementById('edit-form-row-' + productId);
     if (row) row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
 };
 
-// Clean DOM initializer processing dataset variables safely
 document.addEventListener("DOMContentLoaded", function () {
+    const filterBar = document.getElementById('catalog-filters');
+    const cards = [...document.querySelectorAll('[data-product-card]')];
+    const emptyState = document.getElementById('catalog-empty');
+    const count = document.getElementById('catalog-count');
+
+    if (filterBar && cards.length) {
+        const applyFilter = (filter) => {
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const visible = filter === 'all' || card.dataset.category === filter;
+                card.classList.toggle('is-hidden', !visible);
+                if (visible) {
+                    card.style.setProperty('--card-index', visibleCount);
+                    visibleCount += 1;
+                }
+            });
+            filterBar.querySelectorAll('[data-filter]').forEach(button => {
+                const active = button.dataset.filter === filter;
+                button.classList.toggle('active', active);
+                button.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+            if (emptyState) emptyState.hidden = visibleCount !== 0;
+            if (count) count.textContent = `${visibleCount} ${visibleCount === 1 ? 'item' : 'items'} in the catalog`;
+            if (window.history.replaceState) window.history.replaceState(null, '', filter === 'all' ? window.location.pathname : `#${filter}`);
+        };
+
+        document.querySelectorAll('[data-filter]').forEach(control => {
+            control.addEventListener('click', () => {
+                applyFilter(control.dataset.filter);
+                document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        const initialFilter = window.location.hash.slice(1);
+        applyFilter(filterBar.querySelector(`[data-filter="${initialFilter}"]`) ? initialFilter : 'all');
+    }
+
     const container = document.getElementById('toast-matrix-container');
     if (!container) return;
 
@@ -258,9 +290,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// Cross-browser live visibility focus reloader
-document.addEventListener("visibilitychange", function() {
-    if (!document.hidden) {
-        window.location.reload();
-    }
-});

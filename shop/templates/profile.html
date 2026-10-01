@@ -27,7 +27,6 @@
     .order-history-table th { padding: 0.75rem 1rem; background: #f9f9f9; color: #666666; font-size: 0.8rem; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid #e5e5e5; }
     .order-history-table td { padding: 1.25rem 1rem; border-bottom: 1px solid #e5e5e5; font-size: 0.9rem; }
     
-    /* 🚀 CLEAN CSS PILL MODIFIER CLASSES: Drops all structural IDE linting warnings */
     .status-pill { display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border-radius: 4px; }
     .status-delivered { background: #dfdfdf; color: #555555; }
     .status-dispatched { background: #e0f2fe; color: #0369a1; }
@@ -36,30 +35,44 @@
 </style>
 
 <div class="profile-layout">
-    <!-- Account Information Sidebar Panel -->
     <div class="meta-sidebar">
-        <div class="profile-icon-frame">🧑‍💻</div>
-        <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.35rem; font-weight: 700; color: #000000;">{{ user.username }}</h3>
-        <p style="color: #666666; font-size: 0.85rem; margin-top: 0.25rem;">Verified Store Profile</p>
+        <span class="account-eyebrow">ALPHA / ACCOUNT</span>
+        <div class="profile-icon-frame"><span aria-hidden="true">{{ user.username|first|upper }}</span></div>
+        <h1 class="profile-name">{{ user.username }}</h1>
+        <p class="profile-role">Customer account</p>
         
-        <div style="border-top: 1px solid #e5e5e5; margin-top: 1.5rem; padding-top: 1.5rem; font-size: 0.85rem; color: #444444; text-align: left;">
-            <!-- 🚀 DYNAMIC EMAIL VALUE: Reads the exact email field committed during the user registration form setup -->
-            <p><strong>Email Address:</strong> <span style="color: #111111; font-weight: 500;">{{ user.email }}</span></p>
-            <p style="margin-top: 0.5rem;"><strong>Account Access:</strong> Authorized Partner</p>
+        <div class="profile-contact">
+            <span>Email address</span>
+            <strong>{{ user.email|default:"Not provided" }}</strong>
+        </div>
+        <div class="profile-actions">
+            <a href="{% url 'product_list' %}">Continue shopping <span aria-hidden="true">↗</span></a>
+            <a href="{% url 'logout' %}">Sign out</a>
         </div>
     </div>
 
-    <!-- Central Historical Orders Log Stream -->
     <div class="orders-panel">
-        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Order History Logs</h2>
-        <p style="color: #666666; font-size: 0.9rem; margin-top: 0.25rem;">Monitor real-time fulfillment pipelines and past transaction records.</p>
+        <div class="account-panel-heading">
+            <div>
+                <span class="account-eyebrow">YOUR ACTIVITY</span>
+                <h2>Order history</h2>
+                <p>Track recent purchases and delivery progress.</p>
+            </div>
+            <span class="account-status">Account active</span>
+        </div>
+
+        <div class="account-metrics">
+            <div><strong>{{ orders|length }}</strong><span>Orders placed</span></div>
+            <div><strong>30 days</strong><span>Return window</span></div>
+            <div><strong>Secure</strong><span>Account status</span></div>
+        </div>
         
-        <table class="order-history-table">
+        <div class="order-table-scroll"><table class="order-history-table">
             <thead>
                 <tr>
-                    <th style="text-align: left;">Order Reference</th>
-                    <th style="text-align: center;">Fulfillment Status</th>
-                    <th style="text-align: right;">Total Spent</th>
+                    <th style="text-align: left;">Order</th>
+                    <th style="text-align: center;">Status</th>
+                    <th style="text-align: right;">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -81,11 +94,11 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3" style="text-align: center; color: #666666; padding: 2.5rem 0;">No previous purchases tracked.</td>
+                    <td colspan="3" style="text-align: center; color: #666666; padding: 2.5rem 0;">No orders yet. Your next setup starts here.</td>
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+        </table></div>
     </div>
 </div>
 {% endblock %}

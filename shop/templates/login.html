@@ -85,9 +85,8 @@
 </style>
 
 <div class="auth-card">
-    <!-- 🚀 FIXED HEADING: Professional enterprise authority phrasing parameters -->
-    <h2 class="auth-title">Sign In to Account</h2>
-    <p class="auth-subtitle">Authorized personnel and customer identity secure validation gate.</p>
+    <h2 class="auth-title">Sign in to Alpha Store</h2>
+    <p class="auth-subtitle">Access your account and manage your orders.</p>
     
     <form method="POST">
         {% csrf_token %}
@@ -107,9 +106,9 @@
             {% endfor %}
         {% endif %}
         
-        <button type="submit" class="auth-btn">Log In Securely</button>
+        <button type="submit" class="auth-btn">Sign in</button>
     </form>
     
-    <p class="auth-switch">Don't have an account? <a href="/register/">Register here</a></p>
+    <p class="auth-switch">New to Alpha Store? <a href="/register/">Create an account</a></p>
 </div>
 {% endblock %}

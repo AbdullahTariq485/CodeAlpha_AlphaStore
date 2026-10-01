@@ -6,31 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Alpha Store | Enterprise Hardware Engine{% endblock %}</title>
     
-    <!-- 🚀 Clean, Independent External Corporate Stylesheet Connection -->
-    <link rel="stylesheet" href="{% static 'shop/style.css' %}">
+    <link rel="stylesheet" href="{% static 'shop/style.css' %}?v=10">
 </head>
 <body>
 
-    <!-- 🚀 Main Navigation Header Layer -->
     <header>
         <div class="nav-container">
             <a href="/" class="nav-logo">ALPHA STORE</a>
             <div class="nav-links">
-                <!-- Case 1: Merchant Supervisor Operator Panel -->
                 {% if user.is_staff %}
                     <a href="/alpha-staff/" style="color: #4f46e5; font-weight: 700;">⚙️ Staff Dashboard</a>
                     <a href="/logout/">Log Out</a>
                     
                 
                 {% elif user.is_authenticated %}
-                    <a href="/profile/" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #f4f4f4; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; color: var(--bc-black); text-decoration: none; border: 1px solid var(--bc-border); transition: border-color 0.2s;">
+                    <a href="/profile/" class="nav-account" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #f4f4f4; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; color: var(--bc-black); text-decoration: none; border: 1px solid var(--bc-border); transition: border-color 0.2s;">
                         <span style="font-size: 1rem;">🧑‍💻</span> 
                         <span>{{ user.username }}</span>
                     </a>
                     <a href="/logout/">Log Out</a>
                     <a href="/cart/" class="btn-basket">Basket</a>
                     
-                <!-- Case 3: Guest Visitor Defaults -->
                 {% else %}
                     <a href="/login/">Sign In</a>
                     <a href="/register/">Register</a>
@@ -40,23 +36,32 @@
         </div>
     </header>
 
-    <!-- Main Platform Dynamic Viewport -->
     <main>
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- Hidden toast container layout hook safely passing server-side tags -->
     <div id="toast-matrix-container" 
          data-messages="{% if messages %}{% for m in messages %}{{ m }}|{% if m.tags == 'error' %}error{% else %}success{% endif %};{% endfor %}{% endif %}"
          style="position: fixed; top: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 10000; pointer-events: none;">
     </div>
 
-    <!-- Active separate dynamic script layer -->
-    <script src="{% static 'shop/cart.js' %}"></script>
+    <script src="{% static 'shop/cart.js' %}?v=3"></script>
     
-    <footer>
-        <p>&copy; 2026 Alpha Store. Platform built for Momentum. All rights reserved.</p>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div>
+                <a href="/" class="footer-brand">ALPHA STORE<span>.</span></a>
+                <p class="footer-note">Tools for focused workspaces.</p>
+            </div>
+            <nav class="footer-links" aria-label="Store information">
+                <a href="{% url 'shipping_returns' %}">Shipping & returns</a>
+                <a href="{% url 'contact' %}">Contact</a>
+                <a href="{% url 'terms' %}">Terms</a>
+                <a href="{% url 'privacy' %}">Privacy</a>
+            </nav>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Alpha Store. All rights reserved.</p>
     </footer>
 
 </body>

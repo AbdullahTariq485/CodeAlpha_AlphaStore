@@ -40,7 +40,6 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
-    /* 🚀 High-end inputs override styling for standard Django fields */
     .form-group input { 
         width: 100%; 
         padding: 0.75rem 1rem; 
@@ -82,7 +81,6 @@
         font-weight: 600; 
         text-decoration: underline; 
     }
-    /* Hides or tames the massive default Django password helptext chunks to preserve layout look */
     .helptext { 
         font-size: 0.75rem; 
         color: #888888; 
@@ -94,15 +92,11 @@
 </style>
 
 <div class="auth-card">
-    <!-- 🚀 Renders dynamic title overrides cleanly with structured safe fallbacks -->
-    <h2 class="auth-title">{{ auth_title|default:"Create Account" }}</h2>
-    <p class="auth-subtitle">{{ auth_subtitle|default:"Join us to access curated workplace essentials" }}</p>
+    <h2 class="auth-title">Create your account</h2>
+    <p class="auth-subtitle">Save your details and track your orders.</p>
     
     <form method="POST">
-        <!-- Secure Django form verification tag token -->
         {% csrf_token %}
-        
-        <!-- Iterates and loops through the backend model fields cleanly -->
         {% for field in form %}
             <div class="form-group">
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -116,9 +110,9 @@
             </div>
         {% endfor %}
         
-        <button type="submit" class="auth-btn">Register Securely</button>
+        <button type="submit" class="auth-btn">Create account</button>
     </form>
     
-    <p class="auth-switch">Already have an account? <a href="/login/">Sign in here</a></p>
+    <p class="auth-switch">Already have an account? <a href="/login/">Sign in</a></p>
 </div>
 {% endblock %}

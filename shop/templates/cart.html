@@ -7,7 +7,7 @@
     .cart-main-panel { background: #ffffff; border: 1px solid #e5e5e5; padding: 2rem; }
     .cart-table { width: 100%; border-collapse: collapse; text-align: left; }
     .cart-table th { padding-bottom: 1rem; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .cart-table td { padding: 1.5rem 0; border-bottom: 1px solid #f1f5f9; vertical-align: middle; transition: all 0.3s ease; }
+    .cart-table td { padding: 1.5rem 0; border-bottom: 1px solid #f1f5f9; vertical-align: middle; transition: background-color 0.3s var(--motion-ease), opacity 0.3s var(--motion-ease), transform 0.3s var(--motion-ease); }
     .cart-table tr:last-child td { border-bottom: none; }
     .product-title { font-weight: 700; font-size: 1.1rem; color: #0f172a; }
     .product-meta { font-size: 0.85rem; color: #64748b; margin-top: 0.25rem; }
@@ -28,7 +28,7 @@
     .checkout-action-btn:hover { opacity: 0.9; }
 </style>
 
-<h2 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; font-family: 'Plus Jakarta Sans', sans-serif;">Your Shopping Basket</h2>
+<h1 class="cart-page-title">Your basket</h1>
 
 <div class="cart-wrapper" id="cart-container-box">
     <div class="cart-main-panel">
@@ -44,19 +44,24 @@
                 {% if items %}
                     {% for item in items %}
                     <tr id="row-{{ item.product.id }}">
-                        <td>
+                        <td class="cart-product-cell">
+                            <div class="cart-product-visual">
+                                {% if item.product.has_image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <span aria-hidden="true">+</span>
+                                {% endif %}
+                            </div>
+                            <div class="cart-product-copy">
                             <div class="product-title">{{ item.product.name }}</div>
                             <div class="product-meta">Premium Hardware Item</div>
+                            </div>
                         </td>
                         <td style="text-align: center;">
                             <div style="display: flex; align-items: center; justify-content: center;">
-                                <!-- ➖ Button: Calls internal JS handler directly -->
                                 <button type="button" class="qty-btn" onclick="modifyCartNative('decrease', '{{ item.product.id }}')">—</button>
                                 <span class="qty-val" id="qty-{{ item.product.id }}">{{ item.quantity|default:"1" }}</span>
-                                <!-- ➕ Button: Calls internal JS handler directly -->
                                 <button type="button" class="qty-btn" onclick="modifyCartNative('increase', '{{ item.product.id }}')">+</button>
-                                
-                                <!-- 🗑️ Remove Button -->
                                 <button type="button" class="remove-action-btn" onclick="modifyCartNative('remove', '{{ item.product.id }}')">Remove</button>
                             </div>
                         </td>
@@ -98,12 +103,10 @@
     </div>
 </div>
 
-<!-- 🚀 DIRECT NATIVE JAVASCRIPT ASYNC ENGINE (Bypasses all external 404 script bugs) -->
 <script>
 function modifyCartNative(action, productId) {
     const url = `/cart/${action}/${productId}/`;
     
-    // We send dual security headers to ensure both standard Django setups recognize the AJAX check
     fetch(url, {
         method: 'GET',
         headers: { 
@@ -116,21 +119,21 @@ function modifyCartNative(action, productId) {
         return response.json();
     })
     .then(data => {
-        // 1. Instantly update overall grand totals on screen
         document.querySelectorAll('.grand-total-val').forEach(el => {
             el.innerText = data.total_price;
         });
 
-        // 2. Handle item removal animation states
         if (action === 'remove' || data.removed === true) {
             const row = document.getElementById(`row-${productId}`);
-            if (row) row.remove();
+            if (row) {
+                row.classList.add('is-removing');
+                setTimeout(() => row.remove(), 300);
+            }
             
             if (typeof showToast === 'function') {
                 showToast("Item completely removed from basket", "error");
             }
             
-            // Re-render empty look if item count hits zero
             if (parseInt(data.items_count) === 0 || Object.keys(data.items).length === 0) {
                 document.getElementById('cart-items-body').innerHTML = `
                     <tr id="empty-row-msg">
@@ -140,13 +143,22 @@ function modifyCartNative(action, productId) {
                 document.getElementById('checkout-btn-wrapper').innerHTML = '';
             }
         } else {
-            // 3. Update quantity numbers text and inline row subtotals smoothly
             const itemData = data.items[productId];
             if (itemData) {
                 const qtyEl = document.getElementById(`qty-${productId}`);
                 const subEl = document.getElementById(`subtotal-${productId}`);
-                if (qtyEl) qtyEl.innerText = itemData.quantity;
-                if (subEl) subEl.innerText = itemData.subtotal;
+                if (qtyEl) {
+                    qtyEl.innerText = itemData.quantity;
+                    qtyEl.classList.remove('value-updated');
+                    void qtyEl.offsetWidth;
+                    qtyEl.classList.add('value-updated');
+                }
+                if (subEl) {
+                    subEl.innerText = itemData.subtotal;
+                    subEl.classList.remove('value-updated');
+                    void subEl.offsetWidth;
+                    subEl.classList.add('value-updated');
+                }
                 
                 if (typeof showToast === 'function') {
                     showToast("Basket quantity updated smoothly!");
@@ -156,7 +168,6 @@ function modifyCartNative(action, productId) {
     })
     .catch(error => {
         console.error('AJAX Sync failure:', error);
-        // Fail-safe fallback: If an endpoint drops data, force standard reload to keep totals correct
         window.location.reload();
     });
 }

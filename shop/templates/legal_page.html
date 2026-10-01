@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page.title }} | Alpha Store{% endblock %}
+
+{% block content %}
+<article class="info-page">
+    <span class="eyebrow">{{ page.eyebrow }}</span>
+    <h1>{{ page.title }}</h1>
+    <p class="info-intro">{{ page.intro }}</p>
+    <div class="info-sections">
+        {% for heading, copy in page.sections %}
+        <section class="info-section">
+            <h2>{{ heading }}</h2>
+            <p>{{ copy }}</p>
+        </section>
+        {% endfor %}
+    </div>
+</article>
+{% endblock %}

@@ -1,30 +1,41 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# =========================================================================
-# 🛒 PRODUCT CATALOG MODEL
-# =========================================================================
-
 class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     in_stock = models.BooleanField(default=True)
     
-    # 🚀 FIXED: Absolute pristine field using upload_to parameter
     image = models.ImageField(upload_to='products/', null=True, blank=True)
 
     @property
     def has_image(self):
         return bool(self.image and self.image.storage.exists(self.image.name))
 
+    @property
+    def category_key(self):
+        name = self.name.lower()
+        if any(term in name for term in ('mouse', 'keyboard', 'controller', 'webcam')):
+            return 'peripherals'
+        if any(term in name for term in ('monitor', 'display', 'screen')):
+            return 'monitors'
+        if any(term in name for term in ('audio', 'headset', 'speaker', 'microphone', 'mic')):
+            return 'audio'
+        return 'accessories'
+
+    @property
+    def category_label(self):
+        return {
+            'peripherals': 'Keyboards & mice',
+            'monitors': 'Monitors & displays',
+            'audio': 'Audio',
+            'accessories': 'Desk accessories',
+        }[self.category_key]
+
     def __str__(self):
         return self.name
 
-
-# =========================================================================
-# 🛒 SHOPPING CART MODEL
-# =========================================================================
 
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -34,10 +45,6 @@ class CartItem(models.Model):
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
 
-
-# =========================================================================
-# 📦 ORDER & FULFILLMENT PIPELINE MODELS
-# =========================================================================
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
